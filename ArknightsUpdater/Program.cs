@@ -57,7 +57,7 @@ internal class Program
                         RefreshDelayInSeconds = ConfigurationRoot.GetValue<double>("Download:RefreshDelayInSeconds"),
                     };
                     var newFilePath = Path.Combine(DownloadPath, res.OriginalFileName);
-                    //await downloader.DownloadAsync(res.FileUri, newFilePath);
+                    await downloader.DownloadAsync(res.FileUri, newFilePath);
                     await InstallAsync(newFilePath);
                     string oldFilePath = Path.Combine(DownloadPath, ConfigurationRoot["lastest_filename"]);
                     if (File.Exists(oldFilePath)) File.Delete(oldFilePath);
