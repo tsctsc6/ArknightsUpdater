@@ -1,0 +1,9 @@
+{
+    "PollingInterval": "02:00:00",
+    "Download": {
+        "BufferSize": 8192,
+        "MaxMegaBytesPerSecond": 3,
+        "RefreshDelayInSeconds": 0.5
+    },
+    "lastest_filename": "??"
+}
