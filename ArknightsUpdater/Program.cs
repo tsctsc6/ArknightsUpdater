@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Serilog;
+using System.Diagnostics;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -8,6 +10,10 @@ namespace ArknightsUpdater;
 
 internal class Program
 {
+    [DllImport("user32.dll")]
+    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+    const int SW_MINIMIZE = 6;
+
     private const string DownloadPath = @".\Downloads";
     private const string LogPath = @".\Logs";
     private const string ConfigPath = @".\config.json";
@@ -50,7 +56,9 @@ internal class Program
                         MaxMegaBytesPerSecond = ConfigurationRoot.GetValue<double>("Download:MaxMegaBytesPerSecond"),
                         RefreshDelayInSeconds = ConfigurationRoot.GetValue<double>("Download:RefreshDelayInSeconds"),
                     };
-                    await downloader.DownloadAsync(res.FileUri, Path.Combine(DownloadPath, res.OriginalFileName));
+                    var newFilePath = Path.Combine(DownloadPath, res.OriginalFileName);
+                    await downloader.DownloadAsync(res.FileUri, newFilePath);
+                    await InstallAsync(newFilePath);
                     string oldFilePath = Path.Combine(DownloadPath, ConfigurationRoot["lastest_filename"]);
                     if (File.Exists(oldFilePath)) File.Delete(oldFilePath);
                     var jsonNode = JsonNode.Parse(await File.ReadAllTextAsync(ConfigPath));
@@ -96,5 +104,59 @@ internal class Program
                 OriginalFileName = originalFileName
             };
         }
+    }
+
+    static async Task InstallAsync(string filePath)
+    {
+        Log.Information("安装...");
+        Process emulatorProcess = new Process
+        {
+            StartInfo = new()
+            {
+                FileName = @"C:\Program Files\BlueStacks_nxt\HD-Player.exe",
+                Arguments = ""
+            }
+        };
+        emulatorProcess.Start();
+
+        emulatorProcess.WaitForInputIdle();
+
+        IntPtr hWnd = 0;
+        while (hWnd == 0)
+        {
+            hWnd = emulatorProcess.MainWindowHandle;
+        }
+        ShowWindow(hWnd, SW_MINIMIZE);
+
+        Process adbProcess = new Process
+        {
+            StartInfo = new()
+            {
+                FileName = @"adb",
+                Arguments = $"-s 127.0.0.1:5555 install \"{filePath}\"",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            }
+        };
+        adbProcess.OutputDataReceived += (sender, args) =>
+        {
+            if (!string.IsNullOrEmpty(args.Data))
+            {
+                Log.Information(args.Data);
+            }
+        };
+        adbProcess.ErrorDataReceived += (sender, args) =>
+        {
+            if (!string.IsNullOrEmpty(args.Data))
+            {
+                Log.Error(args.Data);
+            }
+        };
+        adbProcess.Start();
+        await adbProcess.WaitForExitAsync();
+
+        emulatorProcess.Kill();
     }
 }
