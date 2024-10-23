@@ -57,7 +57,7 @@ internal class Program
                         RefreshDelayInSeconds = ConfigurationRoot.GetValue<double>("Download:RefreshDelayInSeconds"),
                     };
                     var newFilePath = Path.Combine(DownloadPath, res.OriginalFileName);
-                    await downloader.DownloadAsync(res.FileUri, newFilePath);
+                    //await downloader.DownloadAsync(res.FileUri, newFilePath);
                     await InstallAsync(newFilePath);
                     string oldFilePath = Path.Combine(DownloadPath, ConfigurationRoot["lastest_filename"]);
                     if (File.Exists(oldFilePath)) File.Delete(oldFilePath);
@@ -156,6 +156,9 @@ internal class Program
         };
         adbProcess.Start();
         await adbProcess.WaitForExitAsync();
+
+        if (adbProcess.ExitCode == 0) Log.Information("安装完成");
+        else Log.Error("安装失败");
 
         emulatorProcess.Kill();
     }
