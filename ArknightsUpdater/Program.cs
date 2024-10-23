@@ -114,7 +114,7 @@ internal class Program
             StartInfo = new()
             {
                 FileName = ConfigurationRoot["Emulator:Path"],
-                Arguments = $"{ConfigurationRoot["Emulator:Args"]} --cmd installApk --filepath \"{{filePath}}\""
+                Arguments = $"{ConfigurationRoot["Emulator:Args"]} --cmd installApk --filepath \"{filePath}\""
             }
         };
         emulatorProcess.Start();
