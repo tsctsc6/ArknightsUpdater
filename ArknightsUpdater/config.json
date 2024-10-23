@@ -5,5 +5,11 @@
         "MaxMegaBytesPerSecond": 3,
         "RefreshDelayInSeconds": 0.5
     },
+    "Emulator": {
+        "Path": "C:\\Program Files\\BlueStacks_nxt\\HD-Player.exe",
+        "Args": "--instance Nougat64",
+        "adbPath": "adb",
+        "ConnectionAddress": "127.0.0.1:5555"
+    },
     "lastest_filename": "??"
 }

@@ -113,8 +113,8 @@ internal class Program
         {
             StartInfo = new()
             {
-                FileName = @"C:\Program Files\BlueStacks_nxt\HD-Player.exe",
-                Arguments = ""
+                FileName = ConfigurationRoot["Emulator:Path"],
+                Arguments = ConfigurationRoot["Emulator:Args"]
             }
         };
         emulatorProcess.Start();
@@ -132,8 +132,8 @@ internal class Program
         {
             StartInfo = new()
             {
-                FileName = @"adb",
-                Arguments = $"-s 127.0.0.1:5555 install \"{filePath}\"",
+                FileName = ConfigurationRoot["Emulator:adbPath"],
+                Arguments = $"-s {ConfigurationRoot["Emulator:ConnectionAddress"]} install \"{filePath}\"",
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
