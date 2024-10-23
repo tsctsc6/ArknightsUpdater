@@ -109,7 +109,7 @@ internal class Program
     static async Task InstallAsync(string filePath)
     {
         Log.Information("安装...");
-        Process emulatorProcess = new Process
+        Process emulatorProcess = new()
         {
             StartInfo = new()
             {
@@ -128,7 +128,7 @@ internal class Program
         }
         ShowWindow(hWnd, SW_MINIMIZE);
 
-        Process adbProcess = new Process
+        Process adbProcess = new()
         {
             StartInfo = new()
             {
