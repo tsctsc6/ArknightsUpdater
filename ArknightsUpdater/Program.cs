@@ -51,6 +51,8 @@ internal class Program
                         RefreshDelayInSeconds = ConfigurationRoot.GetValue<double>("Download:RefreshDelayInSeconds"),
                     };
                     await downloader.DownloadAsync(res.FileUri, Path.Combine(DownloadPath, res.OriginalFileName));
+                    string oldFilePath = Path.Combine(DownloadPath, ConfigurationRoot["lastest_filename"]);
+                    if (File.Exists(oldFilePath)) File.Delete(oldFilePath);
                     var jsonNode = JsonNode.Parse(await File.ReadAllTextAsync(ConfigPath));
                     jsonNode!["lastest_filename"] = res.OriginalFileName;
                     await File.WriteAllTextAsync(ConfigPath, jsonNode.ToJsonString(options));
