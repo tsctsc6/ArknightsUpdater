@@ -114,7 +114,7 @@ internal class Program
             StartInfo = new()
             {
                 FileName = ConfigurationRoot["Emulator:Path"],
-                Arguments = ConfigurationRoot["Emulator:Args"]
+                Arguments = $"{ConfigurationRoot["Emulator:Args"]} --cmd installApk --filepath \"{{filePath}}\""
             }
         };
         emulatorProcess.Start();
@@ -127,7 +127,7 @@ internal class Program
             hWnd = emulatorProcess.MainWindowHandle;
         }
         ShowWindow(hWnd, SW_MINIMIZE);
-
+        /*
         Process adbProcess = new()
         {
             StartInfo = new()
@@ -159,6 +159,9 @@ internal class Program
 
         if (adbProcess.ExitCode == 0) Log.Information("安装完成");
         else Log.Error("安装失败");
+        */
+
+        await Task.Delay(TimeSpan.FromMinutes(3));
 
         emulatorProcess.Kill();
     }
